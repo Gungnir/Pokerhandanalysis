@@ -1,0 +1,207 @@
+<html>
+  <p>Poker hand analysis</p>
+  <p>Javascript</p>
+  <br />
+  <b> Hand 1</b>
+  <p id="hand1"></p>
+  <b> Hand 2</b>
+  <p id="hand2"></p>
+  <b> Hand 3</b>
+  <p id="hand3"></p>
+  <b> Test hand</b>
+  <p id="test_hand"></p>
+  <button value="Refresh" onClick="window.location.reload()">
+    Lataa sivu uudelleen
+  </button>
+  <script>
+    //Initial version
+      //Poker hand analysis, JK
+      //Generate a shuffled deck
+      //Form 3 hands from the shuffled deck
+      //Analyze them for poker hands Two Pair, Straight, Flush and Straight Flush
+
+    //Array with display names to add to cards
+    const cardNames = [
+      "Filler 1",
+      "Filler 2",
+      "[2]",
+      "[3]",
+      "[4]",
+      "[5]",
+      "[6]",
+      "[7]",
+      "[8]",
+      "[9]",
+      "[10]",
+      "[J]",
+      "[Q]",
+      "[K]",
+      "[A]"
+    ];
+
+    //Generate deck of cards with ranks from 2 to 14 and 4 different suits
+    //playingDeck will be filled with 52 objects structured like so: {rank:2, suit:"Hearts", name="[K]"}
+    const playingDeck = [];
+
+    for (i = 0; i < 4; i++) {
+      const cardsuits = ["Clubs", "Diamonds", "Hearts", "Spades"];
+      for (e = 2; e <= 14; e++) {
+        playingDeck.push({
+          rank: e,
+          suit: cardsuits[i],
+          name: cardNames[e]
+        });
+      }
+    }
+
+    //Shuffle the deck
+    const shuffledDeck = playingDeck.sort(() => Math.random() - 0.5);
+    console.log("======================");
+    console.log("Shuffled deck!");
+    console.log(...shuffledDeck);
+    console.log("======================");
+
+    //Pick hands from the top of the shuffled deck
+    const hand1 = shuffledDeck.slice(0, 5);
+    const hand2 = shuffledDeck.slice(5, 10);
+    const hand3 = shuffledDeck.slice(10, 15);
+    console.log("Hand 1 cards:");
+    console.log(...hand1);
+    console.log("Hand 2 cards:");
+    console.log(...hand2);
+    console.log("Hand 3 cards:");
+    console.log(...hand3);
+
+    //Return new array of only card ranks from input
+    handRanks = hand => {
+      return hand.map(card => card.rank);
+    };
+
+    //Return new array of only card suits from input
+    handSuits = hand => {
+      return hand.map(card => card.suit);
+    };
+
+    //Return amount of pairs in hand, [2,2,3,4,5] = 1 pair, [2,2,3,3,5] = 2 pairs etc.
+    cardDuplicates = cards => {
+      const duplicates = [];
+      let pairs = 0;
+      cards.forEach(card => (duplicates[card] = (duplicates[card] || 0) + 1));
+
+      for (let i = 0; i < duplicates.length; i++) {
+        if (duplicates[i] == 2) pairs++;
+      }
+      return pairs;
+    };
+
+    //Pass input through cardDuplicates to see amount of pairs, 2 to complete two pairs
+    cardTwoPair = cards => {
+      if (cardDuplicates(cards) == 2) return true;
+      else return false;
+    };
+
+    //Start by checking for 5 unique values in hand
+    //Check for straight by calculating if (max - min +1) == 5
+    //For example: 14 (Ace) - 10 (Ten) + 1 results in 5, it is a straight.
+    //10,11,12,13,14 => 14 - 10 + 1 = 5 (Straight)
+    //10,7,5,8,14 => 14 - 5 + 1 = 10 (Not Straight)
+    cardStraight = cards => {
+      let checkunique = [...new Set(cards)];
+      const handMin = Math.min(...cards);
+      const handMax = Math.max(...cards);
+
+      if (checkunique.length < 5) return false;
+      if (handMax - handMin + 1 == cards.length) return true;
+      else return false;
+    };
+
+    //handsuites generates a new Set that stores unique values, so 1 entry means the input had 5 duplicates
+    cardFlush = cards => {
+      let handsuites = [...new Set(cards)];
+      if (handsuites.length == 1) return true;
+      else return false;
+    };
+
+    //See if Straight and Flush checks both return true
+    cardStraightFlush = (cardranks, cardsuits) => {
+      if (cardStraight(cardranks) && cardFlush(cardsuits)) return true;
+      else return false;
+    };
+
+    //Hand for testing purposes
+    //Valid ranks 2,3,4,5,6,7,8,9,10,11,12,13,14
+    //Valid suits "Clubs", "Diamonds", "Hearts", "Spades"
+    const test_hand = [
+      {
+        rank: 2,
+        suit: "Spades",
+        name: "[2]"
+      },
+      {
+        rank: 3,
+        suit: "Spades",
+        name: "[3]"
+      },
+      {
+        rank: 4,
+        suit: "Spades",
+        name: "[4]"
+      },
+      {
+        rank: 5,
+        suit: "Spades",
+        name: "[5]"
+      },
+      {
+        rank: 6,
+        suit: "Spades",
+        name: "[6]"
+      }
+    ];
+
+    //Order the checks from weakest to strongest to ensure the strongest hand is shown in cases like straight flush
+    handAnalyzer = hand => {
+      handrank = handRanks(hand);
+      handsuit = handSuits(hand);
+
+      let result = "Nothing!";
+
+      //Print out a pretty version of the hand
+      let prettyhand = "Your hand was = ";
+      for (i = 0; i < 5; i++) {
+        prettyhand += hand[i].name + " of " + hand[i].suit + ", ";
+      }
+
+      if (cardTwoPair(handrank)) result = "Two pair!";
+      if (cardStraight(handrank)) result = "Straight!";
+      if (cardFlush(handsuit)) result = "Flush!";
+      if (cardStraightFlush(handrank, handsuit)) result = "Straight Flush!";
+      return "You got " + result + "\n" + prettyhand;
+    };
+
+    console.log("======================");
+    console.log("======================");
+    console.log("RESULTS");
+    console.log("======================");
+    console.log("======================");
+    console.log("Hand 1");
+    console.log(handAnalyzer(hand1));
+    console.log("======================");
+    console.log("Hand 2");
+    console.log(handAnalyzer(hand2));
+    console.log("======================");
+    console.log("Hand 3");
+    console.log(handAnalyzer(hand3));
+    console.log("======================");
+    console.log("======================");
+    console.log("Test pre-selected hand");
+    console.log("======================");
+    console.log("======================");
+    console.log(handAnalyzer(test_hand));
+    console.log("======================");
+    document.getElementById("hand1").innerHTML = handAnalyzer(hand1);
+    document.getElementById("hand2").innerHTML = handAnalyzer(hand2);
+    document.getElementById("hand3").innerHTML = handAnalyzer(hand3);
+    document.getElementById("test_hand").innerHTML = handAnalyzer(test_hand);
+  </script>
+</html>
