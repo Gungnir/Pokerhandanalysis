@@ -94,6 +94,12 @@
       return pairs;
     };
 
+    //Pass input through cardDuplicates to see amount of pairs, 1 to complete one pair
+    cardPair = cards => {
+      if (cardDuplicates(cards) == 1) return true;
+      else return false;
+    };
+
     //Pass input through cardDuplicates to see amount of pairs, 2 to complete two pairs
     cardTwoPair = cards => {
       if (cardDuplicates(cards) == 2) return true;
@@ -172,6 +178,7 @@
         prettyhand += hand[i].name + " of " + hand[i].suit + ", ";
       }
 
+      if (cardPair(handrank)) result = "One pair!"
       if (cardTwoPair(handrank)) result = "Two pair!";
       if (cardStraight(handrank)) result = "Straight!";
       if (cardFlush(handsuit)) result = "Flush!";
