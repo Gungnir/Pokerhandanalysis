@@ -43,13 +43,13 @@
     //playingDeck will be filled with 52 objects structured like so: {rank:2, suit:"Hearts", name="[K]"}
     const playingDeck = [];
 
-    for (i = 0; i < 4; i++) {
+    for (suits = 0; suits < 4; suits++) {
       const cardsuits = ["Clubs", "Diamonds", "Hearts", "Spades"];
-      for (e = 2; e <= 14; e++) {
+      for (ranks = 2; ranks <= 14; ranks++) {
         playingDeck.push({
-          rank: e,
-          suit: cardsuits[i],
-          name: cardNames[e]
+          rank: ranks,
+          suit: cardsuits[suits],
+          name: cardNames[ranks]
         });
       }
     }
@@ -86,11 +86,16 @@
     cardDuplicates = cards => {
       const duplicates = [];
       let pairs = 0;
+      let threes = 0;
       cards.forEach(card => (duplicates[card] = (duplicates[card] || 0) + 1));
 
       for (let i = 0; i < duplicates.length; i++) {
         if (duplicates[i] == 2) pairs++;
+        if (duplicates[i] == 3) threes++;
       }
+      console.log("duplicates []" + "" + duplicates)
+      console.log("pairs " + pairs)
+      console.log("threes " + threes)
       return pairs;
     };
 
@@ -144,22 +149,22 @@
         name: "[2]"
       },
       {
-        rank: 3,
+        rank: 2,
         suit: "Spades",
         name: "[3]"
       },
       {
-        rank: 4,
+        rank: 2,
         suit: "Spades",
         name: "[4]"
       },
       {
-        rank: 5,
+        rank: 3,
         suit: "Spades",
         name: "[5]"
       },
       {
-        rank: 6,
+        rank: 3,
         suit: "Spades",
         name: "[6]"
       }
@@ -169,7 +174,6 @@
     handAnalyzer = hand => {
       handrank = handRanks(hand);
       handsuit = handSuits(hand);
-
       let result = "Nothing!";
 
       //Print out a pretty version of the hand
